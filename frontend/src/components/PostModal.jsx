@@ -1,25 +1,28 @@
 import { useState } from "react";
-import { CATEGORIES, EMOJI_MAP, nextId } from "../data/kazi";
+import { CATEGORIES, REGIONS, DISTRICTS, EMOJI_MAP, nextId } from "../data/kazi";
 
 export default function PostModal({ onClose, onSave }) {
-  const [form, setForm] = useState({ title: "", cat: "nyumbani", eneo: "Kinondoni", malipo: "", kip: "/siku", aina: "Muda kamili", desc: "", phone: "" });
+  const [form, setForm] = useState({ title: "", cat: "nyumbani", region: "dar", wilaya: "kinondoni", eneo: "Kinondoni", malipo: "", kip: "/siku", aina: "Muda kamili", desc: "", phone: "" });
   const [success, setSuccess] = useState(false);
   const [err, setErr] = useState("");
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
+  const currentDistricts = form.region ? DISTRICTS[form.region] : [];
+
   const submit = () => {
-    if (!form.title.trim() || !form.malipo.trim() || !form.desc.trim() || !form.phone.trim()) {
+    if (!form.title.trim() || !form.malipo.trim() || !form.desc.trim() || !form.phone.trim() || !form.region || !form.wilaya) {
       setErr("Tafadhali jaza sehemu zote zinazohitajika (*).");
       return;
     }
     const job = {
       id: nextId(),
-      title: form.title, cat: form.cat, eneo: form.eneo,
+      title: form.title, cat: form.cat, region: form.region, wilaya: form.wilaya, eneo: form.eneo,
       desc: form.desc,
       malipo: form.malipo.startsWith("Tsh") ? form.malipo : "Tsh " + form.malipo,
       kip: form.kip, icon: EMOJI_MAP[form.cat] || "💼",
       bg: "#FEF3DC", aina: form.aina, haraka: false, user: true,
+      createdAt: new Date().toISOString(),
     };
     onSave(job);
     setSuccess(true);
@@ -59,10 +62,28 @@ export default function PostModal({ onClose, onSave }) {
                 </select>
               </div>
               <div>
-                <label className="kn-modal-lbl">Eneo *</label>
-                <select className="kn-modal-input" value={form.eneo} onChange={e => set("eneo", e.target.value)}>
-                  {["Kinondoni", "Ilala", "Temeke", "Ubungo", "Kigamboni"].map(v => <option key={v}>{v}</option>)}
+                <label className="kn-modal-lbl">Mkoa *</label>
+                <select className="kn-modal-input" value={form.region} onChange={e => { set("region", e.target.value); set("wilaya", ""); }}>
+                  {REGIONS.map(r => (
+                    <option key={r.id} value={r.id}>{r.label}</option>
+                  ))}
                 </select>
+              </div>
+            </div>
+
+            <div className="kn-modal-2col">
+              <div>
+                <label className="kn-modal-lbl">Wilaya *</label>
+                <select className="kn-modal-input" value={form.wilaya} onChange={e => set("wilaya", e.target.value)}>
+                  <option value="">Chagua wilaya</option>
+                  {currentDistricts.map(d => (
+                    <option key={d.id} value={d.id}>{d.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="kn-modal-lbl">Eneo (Jina la mahali)</label>
+                <input className="kn-modal-input" value={form.eneo} onChange={e => set("eneo", e.target.value)} placeholder="Mfano: Kariakoo, Upanga..." />
               </div>
             </div>
 

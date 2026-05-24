@@ -106,7 +106,7 @@
 .kn-dot.active { background: #fff; width: 26px; border-radius: 4px; }
 
 .kn-search-float {
-  position: absolute; bottom: -32px; left: 50%; transform: translateX(-50%);
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
   width: min(720px, calc(100% - 2.5rem));
   background: #fff; border-radius: var(--r-lg); box-shadow: var(--sh-lg);
   display: flex; align-items: center; padding: 7px 7px 7px 18px; gap: 8px;
@@ -601,7 +601,7 @@
   .kn-hero { height: 460px; }
   .kn-slide-content { padding: 0 1.5rem; }
   .kn-slider-arrow { display: none; }
-  .kn-search-float { bottom: -46px; flex-wrap: wrap; }
+  .kn-search-float { bottom: 12px; flex-wrap: wrap; }
   .kn-main { padding: 4.5rem 1rem 2rem; }
   .kn-sep { display: none; }
   .kn-modal-2col { grid-template-columns: 1fr; }

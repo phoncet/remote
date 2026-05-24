@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 import Logo from "../components/Logo";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useUser();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -21,7 +23,8 @@ export default function LoginPage() {
     // Hapa ungeweka mawasiliano na seva (API) ya kweli.
     setTimeout(() => {
       setLoading(false);
-      navigate("/");
+      login(phone, password);
+      navigate("/profile");
     }, 1000);
   };
 

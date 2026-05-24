@@ -2,7 +2,7 @@ import { useState } from "react";
 import Navbar from "../components/Navbar";
 import HeroSlider from "../components/HeroSlider";
 import SideMenu from "../components/SideMenu";
-import { Stats, TrustBar, FilterPills } from "../components/Sections";
+import { Stats, TrustBar, FilterPills, RegionFilter } from "../components/Sections";
 import { CardsList } from "../components/JobCard";
 import ApplyModal from "../components/ApplyModal";
 import PostModal from "../components/PostModal";
@@ -14,6 +14,8 @@ export default function HomePage() {
   const [cat, setCat] = useState("zote");
   const [query, setQuery] = useState("");
   const [eneofil, setEneofil] = useState("");
+  const [region, setRegion] = useState("");
+  const [district, setDistrict] = useState("");
   const [applyJob, setApplyJob] = useState(null);
   const [postOpen, setPostOpen] = useState(false);
   const [sideOpen, setSideOpen] = useState(false);
@@ -25,7 +27,9 @@ export default function HomePage() {
     const q = query.toLowerCase();
     const mq = !q || k.title.toLowerCase().includes(q) || k.desc.toLowerCase().includes(q) || k.eneo.toLowerCase().includes(q);
     const me = !eneofil || k.eneo === eneofil;
-    return mc && mq && me;
+    const mr = !region || k.region === region;
+    const md = !district || k.wilaya === district;
+    return mc && mq && me && mr && md;
   });
 
   const handleSearch = (q, e) => {
@@ -62,6 +66,13 @@ export default function HomePage() {
           <TrustBar />
 
           <FilterPills active={cat} onChange={setCat} />
+
+          <RegionFilter 
+            activeRegion={region} 
+            activeDistrict={district}
+            onRegionChange={setRegion}
+            onDistrictChange={setDistrict}
+          />
 
           <div className="kn-sec-head">
             <div className="kn-sec-title">Kazi Zinapatikana</div>

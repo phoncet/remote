@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useUser } from "../context/UserContext";
 
-export default function ApplyModal({ job, onClose }) {
+export default function ApplyModal({ job, onClose, onSave }) {
+  const { currentUser, addAppliedJob } = useUser();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [bio, setBio] = useState("");
@@ -8,7 +10,23 @@ export default function ApplyModal({ job, onClose }) {
   const [err, setErr] = useState("");
 
   const submit = () => {
-    if (!name.trim() || !phone.trim()) { setErr("Tafadhali jaza jina na nambari ya simu."); return; }
+    if (!name.trim() || !phone.trim()) { 
+      setErr("Tafadhali jaza jina na nambari ya simu."); 
+      return; 
+    }
+    
+    const applicationData = { name, phone, bio };
+    
+    // Ikiwa user ameingia, save kwenye UserContext
+    if (currentUser) {
+      addAppliedJob(job, applicationData);
+    }
+    
+    // Call onSave ikiwa ipo (kwa HomePage compatibility)
+    if (onSave) {
+      onSave({ ...job, applicationData });
+    }
+    
     setSuccess(true);
     setTimeout(onClose, 3200);
   };

@@ -1,12 +1,15 @@
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 export default function SideMenu({ open, onClose, onSearch, onCatJump }) {
   const navigate = useNavigate();
+  const { currentUser } = useUser();
   const sections = [
     { id: "top-hero", label: "Nyumbani", icon: "ti-home" },
     { id: "kazi-section", label: "Tafuta kazi", icon: "ti-search" },
     { id: "kazi-section", label: "Kazi zote", icon: "ti-list" },
-    { id: "cta-section", label: "Tangaza kazi", icon: "ti-bell" },
+    { path: "/post-job", label: "Tangaza kazi", icon: "ti-bell" },
+    ...(currentUser ? [{ path: "/profile", label: "Akaunti Yangu", icon: "ti-user-circle" }] : []),
     { path: "/about", label: "About", icon: "ti-info-circle" },
   ];
 

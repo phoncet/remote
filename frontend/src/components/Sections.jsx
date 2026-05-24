@@ -1,4 +1,5 @@
-import { CATEGORIES } from "../data/kazi";
+import { CATEGORIES, REGIONS, DISTRICTS } from "../data/kazi";
+import { useState } from "react";
 
 export function Stats({ count }) {
   return (
@@ -48,6 +49,95 @@ export function FilterPills({ active, onChange }) {
           <i className={`ti ${c.icon}`} /> {c.label}
         </button>
       ))}
+    </div>
+  );
+}
+
+export function RegionFilter({ activeRegion, activeDistrict, onRegionChange, onDistrictChange }) {
+  const [showDistricts, setShowDistricts] = useState(false);
+  
+  const currentDistricts = activeRegion ? DISTRICTS[activeRegion] : [];
+
+  return (
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: "1rem",
+      padding: "1.5rem",
+      background: "#f9f9f9",
+      borderRadius: "12px",
+      marginBottom: "1.5rem",
+    }}>
+      {/* Region Filter */}
+      <div>
+        <label style={{
+          display: "block",
+          fontSize: "0.9rem",
+          fontWeight: 600,
+          marginBottom: "0.75rem",
+          color: "var(--ink)",
+        }}>
+          <i className="ti ti-map-pin" style={{ marginRight: "0.5rem" }} />
+          Mikoa
+        </label>
+        <select
+          value={activeRegion}
+          onChange={(e) => {
+            onRegionChange(e.target.value);
+            onDistrictChange("");
+          }}
+          style={{
+            width: "100%",
+            padding: "0.75rem",
+            border: "1px solid var(--card-border)",
+            borderRadius: "8px",
+            fontFamily: "var(--font-body)",
+            fontSize: "0.95rem",
+            cursor: "pointer",
+            background: "white",
+          }}
+        >
+          <option value="">Mikoa yote</option>
+          {REGIONS.map(r => (
+            <option key={r.id} value={r.id}>{r.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* District Filter */}
+      <div>
+        <label style={{
+          display: "block",
+          fontSize: "0.9rem",
+          fontWeight: 600,
+          marginBottom: "0.75rem",
+          color: "var(--ink)",
+        }}>
+          <i className="ti ti-location" style={{ marginRight: "0.5rem" }} />
+          Wilaya
+        </label>
+        <select
+          value={activeDistrict}
+          onChange={(e) => onDistrictChange(e.target.value)}
+          disabled={!activeRegion}
+          style={{
+            width: "100%",
+            padding: "0.75rem",
+            border: "1px solid var(--card-border)",
+            borderRadius: "8px",
+            fontFamily: "var(--font-body)",
+            fontSize: "0.95rem",
+            cursor: activeRegion ? "pointer" : "not-allowed",
+            background: "white",
+            opacity: activeRegion ? 1 : 0.6,
+          }}
+        >
+          <option value="">Wilaya zote</option>
+          {currentDistricts.map(d => (
+            <option key={d.id} value={d.id}>{d.label}</option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 }
