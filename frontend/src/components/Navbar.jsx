@@ -13,25 +13,41 @@ export default function Navbar({ onPost, onMenu }) {
         <button className="kn-btn kn-btn-ghost" onClick={() => navigate("/about") }>
           About
         </button>
-        {currentUser && (
-          <button className="kn-btn kn-btn-ghost" onClick={() => navigate("/post-job")}>
-            <i className="ti ti-plus" /> Tangaza Kazi
-          </button>
-        )}
-        {currentUser ? (
-          <button className="kn-btn kn-btn-solid" onClick={() => navigate("/profile")}>
-            <i className="ti ti-user" /> {currentUser.name}
-          </button>
+        
+        {/* Admin User */}
+        {currentUser?.role === "admin" ? (
+          <>
+            <button className="kn-btn kn-btn-ghost" onClick={() => navigate("/admin")}>
+              <i className="ti ti-shield-check" /> Admin Panel
+            </button>
+            <button className="kn-btn kn-btn-solid" onClick={() => navigate("/profile")}>
+              <i className="ti ti-user" /> Admin
+            </button>
+          </>
         ) : (
           <>
-            {onPost && (
-              <button className="kn-btn kn-btn-ghost" onClick={onPost}>
+            {/* Regular User */}
+            {currentUser && (
+              <button className="kn-btn kn-btn-ghost" onClick={() => navigate("/post-job")}>
                 <i className="ti ti-plus" /> Tangaza Kazi
               </button>
             )}
-            <button className="kn-btn kn-btn-solid" onClick={() => navigate("/login")}>
-              <i className="ti ti-user" /> Ingia
-            </button>
+            {currentUser ? (
+              <button className="kn-btn kn-btn-solid" onClick={() => navigate("/profile")}>
+                <i className="ti ti-user" /> {currentUser.name}
+              </button>
+            ) : (
+              <>
+                {onPost && (
+                  <button className="kn-btn kn-btn-ghost" onClick={onPost}>
+                    <i className="ti ti-plus" /> Tangaza Kazi
+                  </button>
+                )}
+                <button className="kn-btn kn-btn-solid" onClick={() => navigate("/login")}>
+                  <i className="ti ti-user" /> Ingia
+                </button>
+              </>
+            )}
           </>
         )}
       </div>

@@ -5,6 +5,9 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import PostPage from "./pages/PostPage";
 import ProfilePage from "./pages/ProfilePage";
+import AdminLoginPage from "./pages/AdminLoginPage";
+import AdminPage from "./pages/AdminPage";
+import { ProtectedAdminRoute } from "./components/ProtectedAdminRoute";
 
 export default function App() {
   return (
@@ -15,6 +18,18 @@ export default function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/post-job" element={<PostPage />} />
       <Route path="/profile" element={<ProfilePage />} />
+      
+      {/* Admin Routes */}
+      <Route path="/admin-login" element={<AdminLoginPage />} />
+      <Route 
+        path="/admin" 
+        element={
+          <ProtectedAdminRoute>
+            <AdminPage />
+          </ProtectedAdminRoute>
+        } 
+      />
+      
       {/* njia yoyote isiyojulikana inarudi nyumbani */}
       <Route path="*" element={<HomePage />} />
     </Routes>

@@ -4,12 +4,13 @@ import { useUser } from "../context/UserContext";
 export default function SideMenu({ open, onClose, onSearch, onCatJump }) {
   const navigate = useNavigate();
   const { currentUser } = useUser();
+  
   const sections = [
     { id: "top-hero", label: "Nyumbani", icon: "ti-home" },
     { id: "kazi-section", label: "Tafuta kazi", icon: "ti-search" },
     { id: "kazi-section", label: "Kazi zote", icon: "ti-list" },
-    { path: "/post-job", label: "Tangaza kazi", icon: "ti-bell" },
-    ...(currentUser ? [{ path: "/profile", label: "Akaunti Yangu", icon: "ti-user-circle" }] : []),
+    ...(currentUser?.role !== "admin" ? [{ path: "/post-job", label: "Tangaza kazi", icon: "ti-bell" }] : []),
+    ...(currentUser ? [{ path: currentUser.role === "admin" ? "/admin" : "/profile", label: currentUser.role === "admin" ? "🔐 Admin Panel" : "Akaunti Yangu", icon: currentUser.role === "admin" ? "ti-shield-check" : "ti-user-circle" }] : []),
     { path: "/about", label: "About", icon: "ti-info-circle" },
   ];
 
