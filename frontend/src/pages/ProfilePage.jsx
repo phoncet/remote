@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import Navbar from "../components/Navbar";
@@ -10,10 +11,12 @@ export default function ProfilePage() {
   const { currentUser, logout, postedJobs, appliedJobs } = useUser();
   const [sideOpen, setSideOpen] = useState(false);
 
-  // Ikiwa user hajaingia, iarudi login page
-  if (!currentUser) {
-    return navigate("/login");
-  }
+  // Redirect if user not logged in
+  useEffect(() => {
+    if (!currentUser) {
+      navigate("/login");
+    }
+  }, [currentUser, navigate]);
 
   const handleLogout = () => {
     logout();

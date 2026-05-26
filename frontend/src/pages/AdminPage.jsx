@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import Navbar from "../components/Navbar";
@@ -11,10 +12,12 @@ export default function AdminPage() {
   const [sideOpen, setSideOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
-  // Ikiwa user si admin, iarudi login
-  if (!currentUser || currentUser.role !== "admin") {
-    return navigate("/admin-login");
-  }
+  // Check if user is admin
+  useEffect(() => {
+    if (!currentUser || currentUser.role !== "admin") {
+      navigate("/admin-login");
+    }
+  }, [currentUser, navigate]);
 
   const handleLogout = () => {
     logout();

@@ -42,7 +42,7 @@ export default function PostPage() {
         <main className="kn-main">
           <div style={{ textAlign: "center", padding: "40px 20px" }}>
             <h2>Tangaza Kazi Yako</h2>
-            <p>Kazi yako itaonekana mara moja kwenye orodha — bure kabisa</p>
+            <p>Post kazi kwa TSH 200 tu na ionekane kwenye orodha kwa mara moja</p>
           </div>
         </main>
       </div>
