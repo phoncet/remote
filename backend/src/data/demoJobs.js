@@ -1,0 +1,38 @@
+export const DEMO_JOBS = [
+  {
+    id: 1,
+    user_id: null,
+    title: 'Mpishi wa nyumba',
+    category: 'nyumbani',
+    region: 'dar',
+    district: 'kinondoni',
+    location_name: 'Kinondoni',
+    salary: '20000',
+    salary_period: '/kazi',
+    job_type: 'Muda kamili',
+    description: 'Tafuta mpishi mwenye uzoefu wa kupika vyakula vya kikanda.',
+    phone: '0712345678',
+    user_name: null,
+    user_phone: null,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    user_id: null,
+    title: 'Fundi wa umeme',
+    category: 'ufundi',
+    region: 'dar',
+    district: 'ilala',
+    location_name: 'Ilala',
+    salary: '30000',
+    salary_period: '/kazi',
+    job_type: 'Sehemu',
+    description: 'Tafuta fundi wa umeme kwa kazi za nyumbani na ofisi.',
+    phone: '0712987654',
+    user_name: null,
+    user_phone: null,
+    created_at: new Date().toISOString(),
+  },
+];
+
+export default DEMO_JOBS;

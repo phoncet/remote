@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { CATEGORIES, REGIONS, DISTRICTS, EMOJI_MAP, nextId } from "../data/kazi";
+import { useUser } from "../context/UserContext";
+import { apiFetch } from "../api";
 
 export default function PostModal({ onClose, onSave }) {
   const [step, setStep] = useState("payment"); // "payment" -> "verify" -> "form"
@@ -26,23 +28,54 @@ export default function PostModal({ onClose, onSave }) {
     setStep("form");
   };
 
-  const submit = () => {
+  const { currentUser, addPostedJob } = useUser();
+
+  const submit = async () => {
     if (!form.title.trim() || !form.malipo.trim() || !form.desc.trim() || !form.phone.trim() || !form.region || !form.wilaya) {
       setErr("Tafadhali jaza sehemu zote zinazohitajika (*).");
       return;
     }
-    const job = {
-      id: nextId(),
-      title: form.title, cat: form.cat, region: form.region, wilaya: form.wilaya, eneo: form.eneo,
-      desc: form.desc,
-      malipo: form.malipo.startsWith("Tsh") ? form.malipo : "Tsh " + form.malipo,
-      kip: form.kip, icon: EMOJI_MAP[form.cat] || "💼",
-      bg: "#FEF3DC", aina: form.aina, haraka: false, user: true,
-      createdAt: new Date().toISOString(),
-    };
-    onSave(job);
-    setSuccess(true);
-    setTimeout(onClose, 2800);
+    try {
+      if (!currentUser) throw new Error('Tafadhali ingia ili kutangaza kazi');
+
+      const body = {
+        title: form.title,
+        category: form.cat,
+        region: form.region,
+        district: form.wilaya,
+        locationName: form.eneo,
+        salary: form.malipo.replace(/[^0-9]/g, '') || '0',
+        salaryPeriod: form.kip,
+        jobType: form.aina,
+        description: form.desc,
+        phone: form.phone,
+      };
+
+      const res = await apiFetch('/jobs', { method: 'POST', body });
+      const job = res.job;
+
+      // Map to UI shape
+      const uiJob = {
+        id: job.id,
+        title: job.title,
+        desc: job.description,
+        eneo: job.location_name,
+        malipo: job.salary ? `Tsh ${job.salary}` : 'Tsh 0',
+        kip: job.salary_period,
+        aina: job.job_type,
+        icon: EMOJI_MAP[form.cat] || '💼',
+        bg: '#FEF3DC',
+        user: true,
+        createdAt: job.created_at,
+      };
+
+      addPostedJob(uiJob);
+      if (onSave) onSave(uiJob);
+      setSuccess(true);
+      setTimeout(onClose, 2800);
+    } catch (err) {
+      setErr(err.message || 'Haikuwezekana kuchapisha kazi');
+    }
   };
 
   return (

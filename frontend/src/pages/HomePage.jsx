@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import HeroSlider from "../components/HeroSlider";
 import SideMenu from "../components/SideMenu";
@@ -7,7 +7,9 @@ import { CardsList } from "../components/JobCard";
 import ApplyModal from "../components/ApplyModal";
 import PostModal from "../components/PostModal";
 import Footer from "../components/Footer";
-import { BASE_KAZI } from "../data/kazi";
+import { apiFetch } from "../api";
+import { useUser } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
   const [userKazi, setUserKazi] = useState([]);
@@ -19,8 +21,40 @@ export default function HomePage() {
   const [applyJob, setApplyJob] = useState(null);
   const [postOpen, setPostOpen] = useState(false);
   const [sideOpen, setSideOpen] = useState(false);
+  const [fetchedJobs, setFetchedJobs] = useState([]);
+  const { postedJobs } = useUser();
+  const { currentUser } = useUser();
+  const navigate = useNavigate();
 
-  const allKazi = [...BASE_KAZI, ...userKazi];
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await apiFetch('/jobs');
+        if (!mounted) return;
+        setFetchedJobs(data.jobs || []);
+      } catch (err) {
+        console.error('Failed to fetch jobs', err);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  const backendMapped = fetchedJobs.map(j => ({
+    id: j.id,
+    title: j.title,
+    desc: j.description,
+    eneo: j.location_name || j.location || '',
+    malipo: j.salary ? `Tsh ${j.salary}` : 'Tsh 0',
+    kip: j.salary_period || '',
+    aina: j.job_type || (j.category || ''),
+    icon: '💼',
+    bg: '#FEF3DC',
+    user: !!j.user_id,
+    createdAt: j.created_at,
+  }));
+
+  const allKazi = [...backendMapped, ...postedJobs, ...userKazi];
 
   const filtered = allKazi.filter(k => {
     const mc = cat === "zote" || k.cat === cat;
@@ -47,9 +81,19 @@ export default function HomePage() {
     setUserKazi(prev => [job, ...prev]);
   };
 
+  const handlePostClick = () => {
+    if (currentUser) setPostOpen(true);
+    else navigate('/login');
+  };
+
+  const handleApplyClick = (job) => {
+    if (currentUser) setApplyJob(job);
+    else navigate('/login');
+  };
+
   return (
     <>
-      <Navbar onPost={() => setPostOpen(true)} onMenu={() => setSideOpen(true)} />
+      <Navbar onPost={handlePostClick} onMenu={() => setSideOpen(true)} />
 
       <SideMenu
         open={sideOpen}
@@ -79,7 +123,7 @@ export default function HomePage() {
             <div className="kn-sec-count">{filtered.length} kazi zinaonyeshwa</div>
           </div>
 
-          <CardsList jobs={filtered} onApply={setApplyJob} />
+          <CardsList jobs={filtered} onApply={handleApplyClick} />
 
           <div className="kn-cta" id="cta-section">
             <div>

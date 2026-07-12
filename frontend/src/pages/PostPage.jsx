@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import Navbar from "../components/Navbar";
@@ -9,8 +9,12 @@ import PostModal from "../components/PostModal";
 export default function PostPage() {
   const navigate = useNavigate();
   const { currentUser, addPostedJob } = useUser();
-  const [postOpen, setPostOpen] = useState(true);
+  const [postOpen, setPostOpen] = useState(!!currentUser);
   const [sideOpen, setSideOpen] = useState(false);
+
+  useEffect(() => {
+    if (!currentUser) navigate('/login');
+  }, [currentUser, navigate]);
 
   const handleSaveJob = (job) => {
     // Ikiwa user ameingia, save kwenye UserContext

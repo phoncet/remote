@@ -20,12 +20,16 @@ export default function LoginPage() {
     }
     setErr("");
     setLoading(true);
-    // Hapa ungeweka mawasiliano na seva (API) ya kweli.
-    setTimeout(() => {
-      setLoading(false);
-      login(phone, password);
-      navigate("/profile");
-    }, 1000);
+    (async () => {
+      try {
+        await login(phone, password);
+        navigate("/profile");
+      } catch (err) {
+        setErr(err.message || 'Haikuwezekana kuingia');
+      } finally {
+        setLoading(false);
+      }
+    })();
   };
 
   return (

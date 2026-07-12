@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
+import { apiFetch } from "../api";
 
 const UserContext = createContext();
 
@@ -17,11 +18,15 @@ export function UserProvider({ children }) {
     const savedPosted = localStorage.getItem("postedJobs");
     const savedApplied = localStorage.getItem("appliedJobs");
     const savedAllUsers = localStorage.getItem("allUsers");
+    const savedToken = localStorage.getItem("authToken");
 
     if (savedUser) setCurrentUser(JSON.parse(savedUser));
     if (savedPosted) setPostedJobs(JSON.parse(savedPosted));
     if (savedApplied) setAppliedJobs(JSON.parse(savedApplied));
     if (savedAllUsers) setAllUsers(JSON.parse(savedAllUsers));
+    if (savedToken) {
+      // optionally validate token by pinging backend health or user endpoint
+    }
   }, []);
 
   // Save user data kila mara inabadilika
@@ -45,12 +50,26 @@ export function UserProvider({ children }) {
     localStorage.setItem("allUsers", JSON.stringify(allUsers));
   }, [allUsers]);
 
-  const login = (phone, password) => {
-    const newUser = { phone, name: "User", id: Date.now(), role: "user" };
-    setCurrentUser(newUser);
-    // Track all users
-    setAllUsers(prev => [...prev.filter(u => u.phone !== phone), newUser]);
-    return newUser;
+  const login = async (phone, password) => {
+    try {
+      const data = await apiFetch('/auth/login', { method: 'POST', body: { phone, password } });
+      const { user, token } = data;
+      setCurrentUser(user);
+      localStorage.setItem('authToken', token);
+      setAllUsers(prev => [...prev.filter(u => u.phone !== user.phone), user]);
+      return user;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const register = async (name, phone, password) => {
+    try {
+      const data = await apiFetch('/auth/register', { method: 'POST', body: { name, phone, password } });
+      return data;
+    } catch (err) {
+      throw err;
+    }
   };
 
   const adminLogin = (password) => {
@@ -82,7 +101,7 @@ export function UserProvider({ children }) {
   };
 
   return (
-    <UserContext.Provider value={{ currentUser, login, adminLogin, logout, postedJobs, appliedJobs, addPostedJob, addAppliedJob, allUsers }}>
+    <UserContext.Provider value={{ currentUser, login, register, adminLogin, logout, postedJobs, appliedJobs, addPostedJob, addAppliedJob, allUsers }}>
       {children}
     </UserContext.Provider>
   );

@@ -8,12 +8,14 @@ import ProfilePage from "./pages/ProfilePage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminPage from "./pages/AdminPage";
 import { ProtectedAdminRoute } from "./components/ProtectedAdminRoute";
+import ContactPage from "./pages/ContactPage";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/about" element={<AboutPage />} />
+      <Route path="/contact" element={<ContactPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/post-job" element={<PostPage />} />

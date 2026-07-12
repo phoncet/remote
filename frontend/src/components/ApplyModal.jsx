@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useUser } from "../context/UserContext";
+import { apiFetch } from "../api";
 
 export default function ApplyModal({ job, onClose, onSave }) {
   const { currentUser, addAppliedJob } = useUser();
@@ -15,20 +16,29 @@ export default function ApplyModal({ job, onClose, onSave }) {
       return; 
     }
     
-    const applicationData = { name, phone, bio };
-    
-    // Ikiwa user ameingia, save kwenye UserContext
-    if (currentUser) {
-      addAppliedJob(job, applicationData);
-    }
-    
-    // Call onSave ikiwa ipo (kwa HomePage compatibility)
-    if (onSave) {
-      onSave({ ...job, applicationData });
-    }
-    
-    setSuccess(true);
-    setTimeout(onClose, 3200);
+    (async () => {
+      try {
+        if (!currentUser) throw new Error('Tafadhali ingia ili kuomba kazi');
+
+        const body = {
+          jobId: job.id,
+          applicantName: name,
+          applicantPhone: phone,
+          applicantBio: bio,
+        };
+
+        const res = await apiFetch('/applications', { method: 'POST', body });
+
+        // update local state
+        addAppliedJob(job, { name, phone, bio });
+        if (onSave) onSave({ ...job, applicationData: { name, phone, bio } });
+
+        setSuccess(true);
+        setTimeout(onClose, 3200);
+      } catch (err) {
+        setErr(err.message || 'Haikuwezekana kuomba kazi');
+      }
+    })();
   };
 
   return (

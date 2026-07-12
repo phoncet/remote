@@ -13,6 +13,9 @@ export default function Navbar({ onPost, onMenu }) {
         <button className="kn-btn kn-btn-ghost" onClick={() => navigate("/about") }>
           About
         </button>
+        <button className="kn-btn kn-btn-ghost" onClick={() => navigate("/contact") }>
+          Contact
+        </button>
         
         {/* Admin User */}
         {currentUser?.role === "admin" ? (

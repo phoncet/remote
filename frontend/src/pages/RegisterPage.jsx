@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 import Logo from "../components/Logo";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { register } = useUser();
   const [form, setForm] = useState({ jina: "", phone: "", password: "", confirm: "", role: "mtafuta" });
   const [showPass, setShowPass] = useState(false);
   const [agree, setAgree] = useState(false);
@@ -18,8 +20,11 @@ export default function RegisterPage() {
       setErr("Tafadhali jaza sehemu zote zinazohitajika.");
       return;
     }
-    if (form.password.length < 6) {
-      setErr("Nenosiri liwe na herufi 6 au zaidi.");
+    // Password complexity enforced: min 8, uppercase, lowercase, number, special char
+    const complexityRe = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/;
+    const example = 'Mfano: Abc123!@#';
+    if (typeof form.password !== 'string' || form.password.length < 8 || !complexityRe.test(form.password)) {
+      setErr(`Nenosiri lazima liwe angalau herufi 8 na liwe na herufi kubwa, ndogo, namba na alama maalum. ${example}`);
       return;
     }
     if (form.password !== form.confirm) {
@@ -32,11 +37,20 @@ export default function RegisterPage() {
     }
     setErr("");
     setLoading(true);
-    // Hapa ungeweka mawasiliano na seva (API) ya kweli.
-    setTimeout(() => {
-      setLoading(false);
-      navigate("/login");
-    }, 1000);
+    (async () => {
+      try {
+        // backend expects `name`, `phone`, `password`
+        await register(form.jina, form.phone, form.password);
+        navigate("/login");
+      } catch (err) {
+        // Prefer server-provided message and include details when available (dev)
+        const serverMsg = err?.message;
+        const details = err?.body?.details;
+        setErr(details ? `${serverMsg}: ${details}` : (serverMsg || 'Usajili haukukamilika'));
+      } finally {
+        setLoading(false);
+      }
+    })();
   };
 
   return (
